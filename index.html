@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10243a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Load & Trim — Offline</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1420;--panel:#132235;--panel2:#182b41;--line:#2b4057;--text:#eef5fc;--muted:#9eb0c4;--accent:#65d6bd;--accent2:#a8f0df;--warn:#ffc66d;--danger:#ff8d8d}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b1420,#101f31 65%,#0c1826);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+header{padding:22px 18px 16px;max-width:980px;margin:auto} .eyebrow{color:var(--accent);font-size:11px;letter-spacing:.18em;font-weight:800;text-transform:uppercase}
+h1{font-size:clamp(25px,5vw,36px);line-height:1.08;margin:7px 0 8px;letter-spacing:-.04em}.sub{color:var(--muted);margin:0;max-width:650px}
+main{max-width:980px;margin:auto;padding:0 14px 34px;display:grid;gap:14px}
+.card{background:linear-gradient(150deg,rgba(24,43,65,.97),rgba(17,32,49,.98));border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 10px 30px #0002}
+.section-title{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 14px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}label{font-size:12px;color:#b8c8d8;font-weight:650}
+input,select{width:100%;min-width:0;background:#0d1a29;border:1px solid #354b63;border-radius:11px;padding:13px 12px;color:var(--text);font:inherit;outline:none}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd22}input[type=number]{font-variant-numeric:tabular-nums}
+.hint{font-size:11px;color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.metric{background:#0d1a29;border:1px solid #293e55;border-radius:14px;padding:13px;min-width:0}
+.metric.primary{background:linear-gradient(135deg,#153e42,#123039);border-color:#2b766d}
+.metric .k{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#a8bacb;font-weight:750}
+.metric .v{font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:-.035em;margin-top:5px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.metric .u{font-size:11px;color:var(--muted);margin-top:1px}
+.breakdown{width:100%;border-collapse:collapse;font-size:13px}.breakdown th,.breakdown td{padding:10px 4px;border-bottom:1px solid #2b4057;text-align:right;font-variant-numeric:tabular-nums}.breakdown th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em}.breakdown th:first-child,.breakdown td:first-child{text-align:left}.breakdown tr:last-child td{border-bottom:0}.tot{font-weight:800;color:var(--accent2)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.btn{border:1px solid #3a526b;background:#20364c;color:var(--text);padding:10px 13px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}.btn.primary{background:var(--accent);border-color:var(--accent);color:#09231f}.btn:active{transform:translateY(1px)}
+.note{border-left:3px solid var(--warn);padding:10px 12px;background:#2d281f;border-radius:0 10px 10px 0;color:#e8d8b8;font-size:12px}
+.status{font-size:12px;color:var(--accent);min-height:18px;margin-top:9px}.footer{font-size:11px;color:#8fa2b7;text-align:center;padding:4px 14px 20px;max-width:850px;margin:auto}
+@media(min-width:720px){main{grid-template-columns:1fr 1fr;align-items:start}.input-card{grid-column:1}.result-card{grid-column:2;grid-row:1 / span 2}.detail-card{grid-column:1}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:14px}.metrics{gap:7px}.metric{padding:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Offline flight tool</div>
+  <h1>Load <span style="color:var(--accent)">&</span> Trim</h1>
+  <p class="sub">Choose an aircraft, enter fuel and crew weights, and calculate take-off weight and centre of gravity.</p>
+</header>
+<main>
+  <section class="card input-card">
+    <h2 class="section-title">Flight inputs</h2>
+    <div class="form-grid">
+      <div class="field full"><label for="aircraft">Aircraft registration</label><select id="aircraft"></select><div class="hint" id="aircraftHint"></div></div>
+      <div class="field"><label for="fuel">Fuel loaded (litres)</label><input id="fuel" type="number" min="0" step="0.1" value="0" inputmode="decimal"></div>
+      <div class="field"><label for="pilot">Pilot weight (kg)</label><input id="pilot" type="number" min="0" step="0.1" value="0" inputmode="decimal"></div>
+      <div class="field full"><label for="copilot">Co-pilot weight (kg)</label><input id="copilot" type="number" min="0" step="0.1" value="0" inputmode="decimal"></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="saveBtn">Save this calculation</button>
+      <button class="btn" id="resetBtn">Reset inputs</button>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+  </section>
+  <section class="card result-card">
+    <h2 class="section-title">Calculated results</h2>
+    <div class="metrics">
+      <div class="metric primary"><div class="k">Take-off weight</div><div class="v" id="tow">—</div><div class="u">kg</div></div>
+      <div class="metric"><div class="k">Centre of gravity</div><div class="v" id="cg">—</div><div class="u">inches</div></div>
+      <div class="metric"><div class="k">Take-off weight</div><div class="v" id="towLbs">—</div><div class="u">lb</div></div>
+      <div class="metric"><div class="k">Ramp weight</div><div class="v" id="ramp">—</div><div class="u">kg before taxi fuel deduction</div></div>
+    </div>
+    <div style="height:16px"></div>
+    <div class="note">Training / planning aid only. Always verify calculations, aircraft data, weight limits and CG envelope against the current approved aircraft documentation and your operator's procedures before flight.</div>
+  </section>
+  <section class="card detail-card">
+    <h2 class="section-title">Weight & moment breakdown</h2>
+    <table class="breakdown">
+      <thead><tr><th>Item</th><th>Weight (kg)</th><th>Arm (in)</th><th>Moment</th></tr></thead>
+      <tbody id="breakdown"></tbody>
+    </table>
+    <div class="hint" style="margin-top:12px">Fuel density: 0.72 kg/L · Fuel arm: 48 in · Pilot stations: 37 in. Taxi-fuel values are taken from your workbook.</div>
+    <div class="actions">
+      <button class="btn" id="exportBtn">Export saved records</button>
+      <button class="btn" id="importBtn">Import records</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+    <div class="status" id="recordsStatus" aria-live="polite"></div>
+  </section>
+</main>
+<div class="footer">Works offline once this file is saved on your device. Saved records stay in this browser on this device unless you export and import them elsewhere.</div>
+<script>
+const AIRCRAFT = {
+"TNT":{registration:"VT-TNT (S)",empty:760.81,arm:40.02,taxi:3.8},
+"FTV":{registration:"VT-FTV (S)",empty:765.0,arm:39.49,taxi:3.8},
+"LEO":{registration:"VT-LEO (S)",empty:764.0,arm:40.18,taxi:3.8},
+"ICE":{registration:"VT-ICE (R)",empty:765.0,arm:39.22,taxi:3.0},
+"RUM":{registration:"VT-RUM (R)",empty:758.16,arm:43.03,taxi:3.0},
+"HOT":{registration:"VT-HOT (R)",empty:717.0,arm:41.73,taxi:3.0},
+"AAG":{registration:"VT-AAG (S)",empty:760.9,arm:43.87,taxi:3.8},
+"AAL":{registration:"VT-AAL (S)",empty:766.5,arm:43.06,taxi:3.8},
+"SEX":{registration:"VT-SEX (S)",empty:758.29,arm:42.89,taxi:3.8}
+};
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>Number.isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+const aircraft=$("aircraft");
+Object.keys(AIRCRAFT).forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=AIRCRAFT[k].registration;aircraft.appendChild(o)});
+function num(id){const n=parseFloat($(id).value);return Number.isFinite(n)&&n>=0?n:0}
+function calculate(){
+ const a=AIRCRAFT[aircraft.value], fuelL=num("fuel"), pilot=num("pilot"), copilot=num("copilot");
+ const fuelKg=fuelL*.72, taxi=a.taxi;
+ const ramp=a.empty+fuelKg+pilot+copilot;
+ const rampMoment=a.empty*a.arm+fuelKg*48+pilot*37+copilot*37;
+ const tow=ramp-taxi, moment=rampMoment-taxi*48, cg=tow>0?moment/tow:NaN;
+ $("aircraftHint").textContent=`Basic empty weight ${fmt(a.empty)} kg · Empty-weight arm ${fmt(a.arm)} in · Taxi fuel ${fmt(taxi,1)} kg`;
+ $("tow").textContent=fmt(tow); $("cg").textContent=fmt(cg,2); $("towLbs").textContent=fmt(tow*2.2,1); $("ramp").textContent=fmt(ramp);
+ const rows=[
+ ["Basic empty weight",a.empty,a.arm,a.empty*a.arm],
+ ["Usable fuel",fuelKg,48,fuelKg*48],
+ ["Pilot",pilot,37,pilot*37],
+ ["Co-pilot",copilot,37,copilot*37],
+ ["Ramp total",ramp,"—",rampMoment],
+ ["Taxi fuel deduction",-taxi,48,-taxi*48],
+ ["Take-off total",tow,"—",moment]
+ ];
+ $("breakdown").innerHTML=rows.map((r,i)=>`<tr class="${i===4||i===6?'tot':''}"><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${typeof r[2]==="number"?fmt(r[2]):r[2]}</td><td>${fmt(r[3])}</td></tr>`).join("")+
+ `<tr class="tot"><td>CG</td><td colspan="2">Moment ÷ T/O weight</td><td>${fmt(cg)}</td></tr>`;
+ return {aircraft:aircraft.value,registration:a.registration,fuelLitres:fuelL,pilotKg:pilot,copilotKg:copilot,calculatedAt:new Date().toISOString(),rampWeightKg:ramp,takeoffWeightKg:tow,takeoffWeightLb:tow*2.2,cgInches:cg};
+}
+["aircraft","fuel","pilot","copilot"].forEach(id=>$(id).addEventListener("input",calculate));
+function getRecords(){try{return JSON.parse(localStorage.getItem("loadTrimRecords")||"[]")}catch{return []}}
+$("saveBtn").addEventListener("click",()=>{const r=calculate();const records=getRecords();records.unshift(r);localStorage.setItem("loadTrimRecords",JSON.stringify(records));$("status").textContent="Calculation saved on this device.";});
+$("resetBtn").addEventListener("click",()=>{$("fuel").value="0";$("pilot").value="0";$("copilot").value="0";$("status").textContent="Inputs reset.";calculate()});
+$("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(getRecords(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="load-trim-records.json";a.click();URL.revokeObjectURL(a.href);$("recordsStatus").textContent="Export file prepared."});
+$("importBtn").addEventListener("click",()=>$("importFile").click());
+$("importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error("Invalid format");localStorage.setItem("loadTrimRecords",JSON.stringify([...data,...getRecords()]));$("recordsStatus").textContent=`Imported ${data.length} record(s).`; }catch(err){$("recordsStatus").textContent="Import failed: choose a valid exported JSON file."}e.target.value=""});
+calculate();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {})); }
+</script>
+</body>
+</html>
