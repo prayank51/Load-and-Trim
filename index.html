@@ -32,9 +32,20 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
 .status{font-size:12px;color:var(--accent);min-height:18px;margin-top:9px}.footer{font-size:11px;color:#8fa2b7;text-align:center;padding:4px 14px 20px;max-width:850px;margin:auto}
 @media(min-width:720px){main{grid-template-columns:1fr 1fr;align-items:start}.input-card{grid-column:1}.result-card{grid-column:2;grid-row:1 / span 2}.detail-card{grid-column:1}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:14px}.metrics{gap:7px}.metric{padding:10px}}
-</style>
+
+.update-banner{display:none;position:sticky;top:0;z-index:1000;background:#fff0c7;color:#35270b;border-bottom:2px solid #e0ad3b;padding:12px 14px;box-shadow:0 5px 18px #0003}
+.update-inner{max-width:980px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.update-copy{font-size:13px;font-weight:750;flex:1;min-width:190px}
+.update-button{background:#7c5410;color:white;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+
 </head>
 <body>
+<div id="updateBanner" class="update-banner" role="alert">
+  <div class="update-inner">
+    <div class="update-copy">A newer version is available. Please update it for accurate calculation.</div>
+    <button class="update-button" id="updateNowBtn">Update now</button>
+  </div>
+</div>
 <header>
   <div class="eyebrow">Offline flight tool</div>
   <h1>Load <span style="color:var(--accent)">&</span> Trim</h1>
@@ -128,7 +139,44 @@ $("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify
 $("importBtn").addEventListener("click",()=>$("importFile").click());
 $("importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error("Invalid format");localStorage.setItem("loadTrimRecords",JSON.stringify([...data,...getRecords()]));$("recordsStatus").textContent=`Imported ${data.length} record(s).`; }catch(err){$("recordsStatus").textContent="Import failed: choose a valid exported JSON file."}e.target.value=""});
 calculate();
-if ("serviceWorker" in navigator && location.protocol.startsWith("http")) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {})); }
+const VERSION_URL = "./version.json";
+let currentAppVersion = null;
+async function checkForAppUpdate() {
+  if (!location.protocol.startsWith("http")) return;
+  try {
+    const response = await fetch(VERSION_URL + "?check=" + Date.now(), {cache:"no-store"});
+    if (!response.ok) return;
+    const data = await response.json();
+    const latest = String(data.version || "");
+    if (!latest) return;
+    const installed = localStorage.getItem("loadTrimInstalledVersion");
+    currentAppVersion = latest;
+    if (installed && installed !== latest) $("updateBanner").style.display = "block";
+    else if (!installed) localStorage.setItem("loadTrimInstalledVersion", latest);
+  } catch (e) {}
+}
+$("updateNowBtn").addEventListener("click", async () => {
+  const btn = $("updateNowBtn"); btn.disabled = true; btn.textContent = "Updating…";
+  try {
+    if ("serviceWorker" in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.unregister()));
+    }
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter(k => k.startsWith("load-trim-offline-")).map(k => caches.delete(k)));
+    }
+    if (currentAppVersion) localStorage.setItem("loadTrimInstalledVersion", currentAppVersion);
+    const url = new URL(window.location.href);
+    url.searchParams.set("appVersion", currentAppVersion || Date.now());
+    window.location.replace(url.toString());
+  } catch (e) { window.location.reload(); }
+});
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+checkForAppUpdate();
+setInterval(checkForAppUpdate, 60000);
 </script>
 </body>
 </html>

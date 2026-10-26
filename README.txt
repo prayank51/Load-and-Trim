@@ -1,26 +1,14 @@
-LOAD & TRIM — OFFLINE APP
+LOAD & TRIM — UPDATE NOTIFICATION
 
-QUICK START (NO INSTALLATION)
-1. Extract the ZIP file.
-2. Open index.html in Chrome, Edge, Firefox, or another modern browser.
-3. Select the aircraft registration.
-4. Enter fuel in litres, pilot weight in kg, and co-pilot weight in kg.
-5. The app calculates ramp weight, take-off weight, take-off weight in lb, and CG in inches.
-6. “Save this calculation” stores a record in the same browser on that device.
-7. To transfer saved records, export the JSON file on one device and import it on the other.
+Upload/replace index.html, sw.js, version.json, manifest.webmanifest and icon.svg in the ROOT of your existing GitHub Pages repository. README.txt is optional.
 
-INSTALL AS AN APP (PWA)
-Upload all files in this folder to an HTTPS host such as GitHub Pages. Open the hosted page in Chrome and use the browser's Install app / Add to Home screen option. The service worker caches the app so it can open offline after the first successful visit.
+For every future release:
+1. Edit the app code.
+2. Change "version" in version.json to a new value (for example 1.0.1 to 1.0.2).
+3. Commit all changed files to the GitHub Pages branch.
+4. After deployment, students who open the app online are checked for updates. If the version differs, they see: "A newer version is available. Please update it for accurate calculation."
+5. "Update now" clears the old app cache and reloads the new version.
 
-SOURCE DATA / FORMULAS
-Aircraft empty weights, arms, and taxi-fuel values were transcribed from “Load and Trim New.xlsx”.
-Fuel weight = litres × 0.72 kg/L.
-Fuel arm = 48 in; pilot and co-pilot arm = 37 in.
-Ramp weight = empty weight + fuel weight + pilot + co-pilot.
-Take-off weight = ramp weight − taxi-fuel deduction.
-Take-off moment = empty moment + fuel moment + crew moments − taxi-fuel moment.
-CG = take-off moment ÷ take-off weight.
-Take-off weight in lb = kg × 2.2.
+The app checks on open and approximately once per minute while open. A student must be online to learn about a new release; offline users continue with their last cached version. Existing users should open the app online and refresh once after this feature is first deployed.
 
-IMPORTANT
-The workbook's MTOW and MLW cells are blank, and no approved CG envelope is included. This app therefore does not show a certified weight-limit or CG-envelope pass/fail result. Verify all aircraft data and formulas against current approved aircraft documentation and operator procedures before operational use. This app is a calculation aid, not a substitute for an approved load and trim sheet.
+AVIATION SAFETY: The source workbook has blank MTOW/MLW fields and no approved CG envelope. This app does not certify weight/CG limits. Verify data and formulas against current approved aircraft documentation and procedures before operational use.
