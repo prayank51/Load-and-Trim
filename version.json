@@ -1,4 +1,4 @@
 {
-  "version": "1.0.1",
-  "releaseNotes": "Added a notification when a newer app version is published."
+  "version": "1.0.2",
+  "releaseNotes": "Fixed a page rendering issue and retained the update notification."
 }
