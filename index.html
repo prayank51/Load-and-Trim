@@ -28,7 +28,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
 .metric .u{font-size:11px;color:var(--muted);margin-top:1px}
 .breakdown{width:100%;border-collapse:collapse;font-size:13px}.breakdown th,.breakdown td{padding:10px 4px;border-bottom:1px solid #2b4057;text-align:right;font-variant-numeric:tabular-nums}.breakdown th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em}.breakdown th:first-child,.breakdown td:first-child{text-align:left}.breakdown tr:last-child td{border-bottom:0}.tot{font-weight:800;color:var(--accent2)}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.btn{border:1px solid #3a526b;background:#20364c;color:var(--text);padding:10px 13px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}.btn.primary{background:var(--accent);border-color:var(--accent);color:#09231f}.btn:active{transform:translateY(1px)}
-.note{border-left:3px solid var(--warn);padding:10px 12px;background:#2d281f;border-radius:0 10px 10px 0;color:#e8d8b8;font-size:12px}
+.graph-wrap{width:100%;overflow:hidden}.cg-graph{display:block;width:100%;height:auto;min-height:260px}.graph-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--muted);margin-top:8px}.legend-item{display:flex;align-items:center;gap:6px}.legend-swatch{width:18px;height:3px;background:#65d6bd;border-radius:2px}.legend-swatch.utility{height:10px;background:#65d6bd55;border:1px solid #65d6bd}.legend-swatch.marker{width:7px;height:7px;border-radius:50%;background:#65d6bd;border:1px solid #fff}.legend-swatch.marker-yellow{background:#ffd84d}.legend-swatch.marker-orange{background:#ff9f43}.legend-swatch.marker-red{background:#ff7777}.graph-status{font-size:13px;font-weight:750;margin-top:10px;min-height:20px}.note{border-left:3px solid var(--warn);padding:10px 12px;background:#2d281f;border-radius:0 10px 10px 0;color:#e8d8b8;font-size:12px}
 .status{font-size:12px;color:var(--accent);min-height:18px;margin-top:9px}.footer{font-size:11px;color:#8fa2b7;text-align:center;padding:4px 14px 20px;max-width:850px;margin:auto}
 @media(min-width:720px){main{grid-template-columns:1fr 1fr;align-items:start}.input-card{grid-column:1}.result-card{grid-column:2;grid-row:1 / span 2}.detail-card{grid-column:1}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:14px}.metrics{gap:7px}.metric{padding:10px}}
@@ -91,6 +91,20 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
     </div>
     <div class="status" id="recordsStatus" aria-live="polite"></div>
   </section>
+  <section class="card envelope-card" style="grid-column:1/-1">
+    <h2 class="section-title">Centre of gravity envelope · <span id="envelopeModel">—</span></h2>
+    <div class="hint" id="envelopeCaption">Envelope selected automatically from the aircraft registration.</div>
+    <div class="graph-wrap"><svg id="cgGraph" class="cg-graph" viewBox="0 0 720 500" role="img" aria-label="Aircraft centre of gravity envelope with calculated point">
+      <defs><clipPath id="plotClip"><rect x="76" y="28" width="590" height="405"/></clipPath></defs>
+      <rect x="76" y="28" width="590" height="405" fill="#0b1725" stroke="#71869b" stroke-width="1.5"/>
+      <g id="graphGrid"></g><g id="graphEnvelope" clip-path="url(#plotClip)"></g><g id="graphMarker"></g>
+      <text x="371" y="486" text-anchor="middle" fill="#c6d5e3" font-size="15">Centre of Gravity Location — inches aft of datum</text>
+      <text transform="translate(20 230) rotate(-90)" text-anchor="middle" fill="#c6d5e3" font-size="15">Loaded Airplane Weight — lb</text>
+    </svg></div>
+    <div class="graph-legend"><span class="legend-item"><i class="legend-swatch"></i>Normal category envelope</span><span class="legend-item"><i class="legend-swatch utility"></i>Utility category region</span><span class="legend-item"><i class="legend-swatch marker"></i>Well inside</span><span class="legend-item"><i class="legend-swatch marker marker-yellow"></i>Near boundary</span><span class="legend-item"><i class="legend-swatch marker marker-orange"></i>On boundary</span><span class="legend-item"><i class="legend-swatch marker marker-red"></i>Outside</div>
+    <div id="graphStatus" class="graph-status" aria-live="polite">Enter flight weights to plot the result.</div>
+    <div class="note" style="margin-top:10px">Envelope boundaries are traced from the uploaded POH Figure 6-8 charts and are for training display only. Verify exact limits and applicability against the current approved aircraft documentation before operational use.</div>
+  </section>
 </main>
 <div class="footer">Works offline once this file is saved on your device. Saved records stay in this browser on this device unless you export and import them elsewhere.</div>
 <script>
@@ -110,12 +124,54 @@ const fmt=(n,d=2)=>Number.isFinite(n)?n.toLocaleString(undefined,{minimumFractio
 const aircraft=$("aircraft");
 Object.keys(AIRCRAFT).forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=AIRCRAFT[k].registration;aircraft.appendChild(o)});
 function num(id){const n=parseFloat($(id).value);return Number.isFinite(n)&&n>=0?n:0}
+// Manually traced from the uploaded POH Figure 6-8 charts; coordinates are (CG inches, weight lb).
+const CG_ENVELOPES={
+ // User-confirmed CG envelope vertices. The final lower-right point closes
+ // each envelope vertically to the 1,500 lb chart baseline.
+ S:{yMin:1500,yMax:2600,cgMin:35,cgMax:47.30,outer:[[35,1500],[35,1950],[41,2550],[47.30,2550],[47.30,1500]],utility:[[35,1500],[35,1950],[37.50,2200],[40.50,2200],[40.50,1500]]},
+ R:{yMin:1500,yMax:2500,cgMin:35,cgMax:47.40,outer:[[35,1500],[35,1950],[40,2450],[47.40,2450],[47.40,1500]],utility:[[35,1500],[35,1950],[36.50,2100],[40.50,2100],[40.50,1500]]}
+};
+function pointInPolygon(point,poly){const [x,y]=point;let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,yi]=poly[i],[xj,yj]=poly[j];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;}return inside}
+function distanceToPolygonPx(point,poly,X,Y){
+ const [px,py]=[X(point[0]),Y(point[1])];let min=Infinity;
+ for(let i=0;i<poly.length;i++){
+  const a=poly[i],b=poly[(i+1)%poly.length],ax=X(a[0]),ay=Y(a[1]),bx=X(b[0]),by=Y(b[1]);
+  const dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
+  const t=len2?Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/len2)):0;
+  min=Math.min(min,Math.hypot(px-(ax+t*dx),py-(ay+t*dy)));
+ }
+ return min;
+}
+function renderEnvelope(model,weightLb,cgIn){
+ const spec=CG_ENVELOPES[model],L=76,T=28,W=590,H=405,xMin=34,xMax=49;
+ const X=x=>L+(x-xMin)/(xMax-xMin)*W,Y=y=>T+(spec.yMax-y)/(spec.yMax-spec.yMin)*H;
+ const polygon=a=>a.map(([x,y])=>`${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(' ');
+ $('envelopeModel').textContent=`C172${model}`;
+ $('envelopeCaption').textContent=`${model==='S'?'Cessna 172S NAV III':'Cessna 172R'} · Weight in lb · CG in inches aft of datum`;
+ const g=[];for(let x=34;x<=49;x++)g.push(`<line x1="${X(x)}" y1="${T}" x2="${X(x)}" y2="${T+H}" stroke="#263b50"/><text x="${X(x)}" y="454" text-anchor="middle" fill="#aebfd0" font-size="11">${x}</text>`);
+ for(let y=spec.yMin;y<=spec.yMax;y+=100)g.push(`<line x1="${L}" y1="${Y(y)}" x2="${L+W}" y2="${Y(y)}" stroke="#263b50"/><text x="66" y="${Y(y)+4}" text-anchor="end" fill="#aebfd0" font-size="11">${y}</text>`);
+ $('graphGrid').innerHTML=g.join('');
+ $('graphEnvelope').innerHTML=`<polygon points="${polygon(spec.outer)}" fill="#65d6bd" fill-opacity=".10" stroke="#65d6bd" stroke-width="3"/><polygon points="${polygon(spec.utility)}" fill="#65d6bd" fill-opacity=".24" stroke="#65d6bd" stroke-opacity=".75" stroke-width="1.5"/>`;
+ const inBounds=weightLb>=spec.yMin&&weightLb<=spec.yMax&&cgIn>=spec.cgMin&&cgIn<=spec.cgMax;
+ const inside=inBounds&&pointInPolygon([cgIn,weightLb],spec.outer);
+ const utility=inside&&pointInPolygon([cgIn,weightLb],spec.utility);
+ const visible=Number.isFinite(cgIn)&&Number.isFinite(weightLb)&&cgIn>=xMin&&cgIn<=xMax&&weightLb>=spec.yMin&&weightLb<=spec.yMax;
+ const edgeDistance=visible?distanceToPolygonPx([cgIn,weightLb],spec.outer,X,Y):Infinity;
+ const onBorder=inside&&edgeDistance<=1.5, nearBorder=inside&&!onBorder&&edgeDistance<=10;
+ const markerColor=!inside?'#ff7777':onBorder?'#ff9f43':nearBorder?'#ffd84d':'#65d6bd';
+ const markerState=!inside?'outside the envelope':onBorder?'on the envelope boundary':nearBorder?'close to the envelope boundary':'well inside the envelope';
+ $('graphMarker').innerHTML=visible?`<circle cx="${X(cgIn)}" cy="${Y(weightLb)}" r="4" fill="${markerColor}" stroke="#fff" stroke-width="1"/><text x="${Math.min(X(cgIn)+8,620)}" y="${Math.max(Y(weightLb)-13,42)}" fill="#fff" font-size="12" font-weight="700">Current</text>`:'';
+ $('graphStatus').style.color=markerColor;
+ $('graphStatus').textContent=`Point is ${markerState}${inside?(utility?' and within the utility-category region':' (outside the utility-category region)'):''} (${fmt(weightLb,0)} lb · ${fmt(cgIn,2)} in).`;
+}
 function calculate(){
  const a=AIRCRAFT[aircraft.value], fuelL=num("fuel"), pilot=num("pilot"), copilot=num("copilot");
  const fuelKg=fuelL*.72, taxi=a.taxi;
  const ramp=a.empty+fuelKg+pilot+copilot;
  const rampMoment=a.empty*a.arm+fuelKg*48+pilot*37+copilot*37;
  const tow=ramp-taxi, moment=rampMoment-taxi*48, cg=tow>0?moment/tow:NaN;
+ const model=(a.registration.match(/\(([SR])\)/)||[])[1]||"S";
+ renderEnvelope(model,tow*2.2,cg);
  $("aircraftHint").textContent=`Basic empty weight ${fmt(a.empty)} kg · Empty-weight arm ${fmt(a.arm)} in · Taxi fuel ${fmt(taxi,1)} kg`;
  $("tow").textContent=fmt(tow); $("cg").textContent=fmt(cg,2); $("towLbs").textContent=fmt(tow*2.2,1); $("ramp").textContent=fmt(ramp);
  const rows=[
