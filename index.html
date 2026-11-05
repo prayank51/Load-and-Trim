@@ -28,15 +28,34 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
 .metric .u{font-size:11px;color:var(--muted);margin-top:1px}
 .breakdown{width:100%;border-collapse:collapse;font-size:13px}.breakdown th,.breakdown td{padding:10px 4px;border-bottom:1px solid #2b4057;text-align:right;font-variant-numeric:tabular-nums}.breakdown th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em}.breakdown th:first-child,.breakdown td:first-child{text-align:left}.breakdown tr:last-child td{border-bottom:0}.tot{font-weight:800;color:var(--accent2)}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.btn{border:1px solid #3a526b;background:#20364c;color:var(--text);padding:10px 13px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}.btn.primary{background:var(--accent);border-color:var(--accent);color:#09231f}.btn:active{transform:translateY(1px)}
+/* Approved three-button flight-input layout */
+.flight-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:52px}
+.flight-action{min-width:0;height:50px;min-height:50px;padding:3px 4px;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:10px;line-height:1;text-align:center;white-space:nowrap}
+.flight-action svg{width:15px;height:15px;flex:none;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flight-action.primary{color:#09231f}
+@media(max-width:380px){.flight-actions{gap:7px;margin-top:48px}.flight-action{height:46px;min-height:46px;padding:2px;border-radius:9px;font-size:9px;gap:1px}.flight-action svg{width:14px;height:14px}}
 .graph-wrap{width:100%;overflow:hidden}.cg-graph{display:block;width:100%;height:auto;min-height:260px}.graph-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--muted);margin-top:8px}.legend-item{display:flex;align-items:center;gap:6px}.legend-swatch{width:18px;height:3px;background:#65d6bd;border-radius:2px}.legend-swatch.utility{height:10px;background:#65d6bd55;border:1px solid #65d6bd}.legend-swatch.marker{width:7px;height:7px;border-radius:50%;background:#65d6bd;border:1px solid #fff}.legend-swatch.marker-yellow{background:#ffd84d}.legend-swatch.marker-orange{background:#ff9f43}.legend-swatch.marker-red{background:#ff7777}.graph-status{font-size:13px;font-weight:750;margin-top:10px;min-height:20px}.note{border-left:3px solid var(--warn);padding:10px 12px;background:#2d281f;border-radius:0 10px 10px 0;color:#e8d8b8;font-size:12px}
 .status{font-size:12px;color:var(--accent);min-height:18px;margin-top:9px}.footer{font-size:11px;color:#8fa2b7;text-align:center;padding:4px 14px 20px;max-width:850px;margin:auto}
 @media(min-width:720px){main{grid-template-columns:1fr 1fr;align-items:start}.input-card{grid-column:1}.result-card{grid-column:2;grid-row:1 / span 2}.detail-card{grid-column:1}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:380px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:14px}.metrics{gap:7px}.metric{padding:10px}}
+@media(max-width:380px){.card{padding:14px}.metrics{gap:7px}.metric{padding:10px}}
 
 .update-banner{display:none;position:sticky;top:0;z-index:1000;background:#fff0c7;color:#35270b;border-bottom:2px solid #e0ad3b;padding:12px 14px;box-shadow:0 5px 18px #0003}
 .update-inner{max-width:980px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .update-copy{font-size:13px;font-weight:750;flex:1;min-width:190px}
 .update-button{background:#7c5410;color:white;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+
+/* Calculator bottom sheet */
+.calc-overlay{position:fixed;inset:0;z-index:2000;background:rgba(2,8,15,.68);display:none;align-items:flex-end;justify-content:center;padding:14px}
+.calc-overlay.open{display:flex}
+.calc-sheet{width:min(100%,460px);background:#132235;border:1px solid #3a526b;border-radius:22px 22px 18px 18px;padding:18px;box-shadow:0 18px 60px #0008;max-height:min(88vh,720px);overflow:auto;animation:calcSlide .18s ease-out}
+@keyframes calcSlide{from{transform:translateY(22px);opacity:.7}to{transform:translateY(0);opacity:1}}
+.calc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.calc-title{font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#b8c8d8}
+.calc-close{width:38px;height:38px;border-radius:11px;border:1px solid #3a526b;background:#20364c;color:var(--text);font-size:22px;cursor:pointer}
+.calc-display{background:#0b1725;border:1px solid #2b4057;border-radius:14px;padding:14px 15px;margin-bottom:13px;text-align:right;min-height:92px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.calc-expression{color:var(--muted);font-size:14px;min-height:21px;overflow-wrap:anywhere}.calc-value{font-size:clamp(30px,9vw,40px);font-weight:750;line-height:1.2;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.calc-keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.calc-key{min-height:56px;border:1px solid #354b63;border-radius:13px;background:#20364c;color:var(--text);font:700 19px system-ui;cursor:pointer;touch-action:manipulation}.calc-key:active{transform:scale(.97);background:#2a4662}.calc-key.function{background:#1a2d42;color:#b9cbdc}.calc-key.operator{color:var(--accent2);background:#183746;border-color:#315b62}.calc-key.equals{background:var(--accent);border-color:var(--accent);color:#09231f}.calc-key.backspace{font-size:21px}.calc-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:11px}
+@media(max-width:380px){.calc-sheet{padding:14px}.calc-keys{gap:7px}.calc-key{min-height:51px}}
+
 </style>
 </head>
 <body>
@@ -55,14 +74,24 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
   <section class="card input-card">
     <h2 class="section-title">Flight inputs</h2>
     <div class="form-grid">
-      <div class="field full"><label for="aircraft">Aircraft registration</label><select id="aircraft"></select><div class="hint" id="aircraftHint"></div></div>
-      <div class="field"><label for="fuel">Fuel loaded (litres)</label><input id="fuel" type="number" min="0" step="0.1" value="0" inputmode="decimal"></div>
-      <div class="field"><label for="pilot">Pilot weight (kg)</label><input id="pilot" type="number" min="0" step="0.1" value="0" inputmode="decimal"></div>
-      <div class="field full"><label for="copilot">Co-pilot weight (kg)</label><input id="copilot" type="number" min="0" step="0.1" value="0" inputmode="decimal"></div>
+      <div class="field"><label for="aircraft">Aircraft registration</label><select id="aircraft"></select></div>
+      <div class="field"><label for="fuel">Fuel loaded (litres)</label><input id="fuel" type="number" min="0" step="0.1" placeholder="Enter value" inputmode="decimal"></div>
+      <div class="field"><label for="pilot">Pilot weight (kg)</label><input id="pilot" type="number" min="0" step="0.1" placeholder="Enter value" inputmode="decimal"></div>
+      <div class="field"><label for="copilot">Co-pilot weight (kg)</label><input id="copilot" type="number" min="0" step="0.1" placeholder="Enter value" inputmode="decimal"></div>
     </div>
-    <div class="actions">
-      <button class="btn primary" id="saveBtn">Save this calculation</button>
-      <button class="btn" id="resetBtn">Reset inputs</button>
+    <div class="flight-actions">
+      <button class="btn primary flight-action" id="saveBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h13l4 4v14H3V3h1Z"/><path d="M7 3v7h10V3M7 21v-8h10v8"/></svg>
+        <span>Save</span>
+      </button>
+      <button class="btn flight-action" id="calculatorBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8v4H8zM8 14h1m3 0h1m3 0h1M8 18h1m3 0h1m3 0h1"/></svg>
+        <span>Calculator</span>
+      </button>
+      <button class="btn flight-action" id="resetBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 0 1 15.4-6.4L21 7"/><path d="M21 3v4h-4M21 13a9 9 0 0 1-15.4 6.4L3 17"/><path d="M3 21v-4h4"/></svg>
+        <span>Reset</span>
+      </button>
     </div>
     <div class="status" id="status" aria-live="polite"></div>
   </section>
@@ -106,6 +135,31 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
     <div class="note" style="margin-top:10px">Envelope boundaries are traced from the uploaded POH Figure 6-8 charts and are for training display only. Verify exact limits and applicability against the current approved aircraft documentation before operational use.</div>
   </section>
 </main>
+
+<div class="calc-overlay" id="calculatorOverlay" aria-hidden="true">
+  <section class="calc-sheet" role="dialog" aria-modal="true" aria-labelledby="calculatorTitle">
+    <div class="calc-head">
+      <div class="calc-title" id="calculatorTitle">Calculator</div>
+      <button class="calc-close" id="calculatorClose" type="button" aria-label="Close calculator">×</button>
+    </div>
+    <div class="calc-display" aria-live="polite">
+      <div class="calc-expression" id="calcExpression"></div>
+      <div class="calc-value" id="calcValue">0</div>
+    </div>
+    <div class="calc-keys" id="calcKeys">
+      <button class="calc-key function" data-key="clear" type="button">C</button>
+      <button class="calc-key function backspace" data-key="backspace" type="button" aria-label="Backspace">⌫</button>
+      <button class="calc-key function" data-key="percent" type="button">%</button>
+      <button class="calc-key operator" data-key="/" type="button">÷</button>
+      <button class="calc-key" data-key="7" type="button">7</button><button class="calc-key" data-key="8" type="button">8</button><button class="calc-key" data-key="9" type="button">9</button><button class="calc-key operator" data-key="*" type="button">×</button>
+      <button class="calc-key" data-key="4" type="button">4</button><button class="calc-key" data-key="5" type="button">5</button><button class="calc-key" data-key="6" type="button">6</button><button class="calc-key operator" data-key="-" type="button">−</button>
+      <button class="calc-key" data-key="1" type="button">1</button><button class="calc-key" data-key="2" type="button">2</button><button class="calc-key" data-key="3" type="button">3</button><button class="calc-key operator" data-key="+" type="button">+</button>
+      <button class="calc-key function" data-key="sign" type="button">±</button><button class="calc-key" data-key="0" type="button">0</button><button class="calc-key" data-key="." type="button">.</button><button class="calc-key equals" data-key="equals" type="button">=</button>
+    </div>
+    <div class="calc-hint">Use C to clear all · ⌫ to delete the last character</div>
+  </section>
+</div>
+
 <div class="footer">Works offline once this file is saved on your device. Saved records stay in this browser on this device unless you export and import them elsewhere.</div>
 <script>
 const AIRCRAFT = {
@@ -172,7 +226,7 @@ function calculate(){
  const tow=ramp-taxi, moment=rampMoment-taxi*48, cg=tow>0?moment/tow:NaN;
  const model=(a.registration.match(/\(([SR])\)/)||[])[1]||"S";
  renderEnvelope(model,tow*2.2,cg);
- $("aircraftHint").textContent=`Basic empty weight ${fmt(a.empty)} kg · Empty-weight arm ${fmt(a.arm)} in · Taxi fuel ${fmt(taxi,1)} kg`;
+
  $("tow").textContent=fmt(tow); $("cg").textContent=fmt(cg,2); $("towLbs").textContent=fmt(tow*2.2,1); $("ramp").textContent=fmt(ramp);
  const rows=[
  ["Basic empty weight",a.empty,a.arm,a.empty*a.arm],
@@ -190,7 +244,7 @@ function calculate(){
 ["aircraft","fuel","pilot","copilot"].forEach(id=>$(id).addEventListener("input",calculate));
 function getRecords(){try{return JSON.parse(localStorage.getItem("loadTrimRecords")||"[]")}catch{return []}}
 $("saveBtn").addEventListener("click",()=>{const r=calculate();const records=getRecords();records.unshift(r);localStorage.setItem("loadTrimRecords",JSON.stringify(records));$("status").textContent="Calculation saved on this device.";});
-$("resetBtn").addEventListener("click",()=>{$("fuel").value="0";$("pilot").value="0";$("copilot").value="0";$("status").textContent="Inputs reset.";calculate()});
+$("resetBtn").addEventListener("click",()=>{$("fuel").value="";$("pilot").value="";$("copilot").value="";$("status").textContent="Inputs reset.";calculate()});
 $("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(getRecords(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="load-trim-records.json";a.click();URL.revokeObjectURL(a.href);$("recordsStatus").textContent="Export file prepared."});
 $("importBtn").addEventListener("click",()=>$("importFile").click());
 $("importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error("Invalid format");localStorage.setItem("loadTrimRecords",JSON.stringify([...data,...getRecords()]));$("recordsStatus").textContent=`Imported ${data.length} record(s).`; }catch(err){$("recordsStatus").textContent="Import failed: choose a valid exported JSON file."}e.target.value=""});

@@ -1,1 +1,4 @@
-{"version":"1.0.8","releaseNotes":"Added four-colour CG marker status: green inside, yellow near boundary, orange on boundary, red outside."}
+{
+  "version": "1.1.1",
+  "releaseNotes": "Finalized approved flight-input layout: aircraft and fuel on row one, pilot and co-pilot on row two, compact three-button row with 50px button height, icons above labels, and added spacing above the buttons. Removed aircraft detail hint beneath registration. Retains blank numeric fields and popup calculator."
+}
