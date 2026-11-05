@@ -248,6 +248,54 @@ $("resetBtn").addEventListener("click",()=>{$("fuel").value="";$("pilot").value=
 $("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(getRecords(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="load-trim-records.json";a.click();URL.revokeObjectURL(a.href);$("recordsStatus").textContent="Export file prepared."});
 $("importBtn").addEventListener("click",()=>$("importFile").click());
 $("importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error("Invalid format");localStorage.setItem("loadTrimRecords",JSON.stringify([...data,...getRecords()]));$("recordsStatus").textContent=`Imported ${data.length} record(s).`; }catch(err){$("recordsStatus").textContent="Import failed: choose a valid exported JSON file."}e.target.value=""});
+// Calculator popup controls and arithmetic engine.
+const calcOverlay=$('calculatorOverlay');
+let calcInput='0', calcPrevious='';
+function calcRender(){ $('calcValue').textContent=calcInput; $('calcExpression').textContent=calcPrevious; }
+function calcOpen(){ calcOverlay.classList.add('open'); calcOverlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; calcRender(); }
+function calcClose(){ calcOverlay.classList.remove('open'); calcOverlay.setAttribute('aria-hidden','true'); document.body.style.overflow=''; $('calculatorBtn').focus(); }
+function calcAppend(v){
+ if(v==='.' ){
+  const part=calcInput.split(/[+\-*/]/).pop(); if(part.includes('.')) return;
+  if(/[+\-*/]$/.test(calcInput)) calcInput+='0';
+  calcInput+='.'; return;
+ }
+ if(/[+\-*/]/.test(v)){
+  if(calcInput==='0' && v!=='-') return;
+  if(/[+\-*/]$/.test(calcInput)) calcInput=calcInput.slice(0,-1)+v; else calcInput+=v;
+  return;
+ }
+ if(calcInput==='0') calcInput=v; else calcInput+=v;
+}
+function calcEvaluate(expr){
+ const tokens=expr.match(/(?:\d+\.?\d*|\.\d+)|[+\-*/]/g);
+ if(!tokens || tokens.join('')!==expr.replace(/\s/g,'')) throw Error('Invalid expression');
+ let i=0;
+ function factor(){ if(tokens[i]==='+'){i++;return factor()} if(tokens[i]==='-'){i++;return -factor()} const t=tokens[i++]; if(t===undefined||!/^\d*\.?\d+$/.test(t)) throw Error('Number expected'); return Number(t); }
+ function term(){ let v=factor(); while(tokens[i]==='*'||tokens[i]==='/'){const op=tokens[i++],b=factor(); if(op==='/'&&b===0)throw Error('Cannot divide by zero'); v=op==='*'?v*b:v/b;} return v; }
+ function expression(){ let v=term(); while(tokens[i]==='+'||tokens[i]==='-'){const op=tokens[i++],b=term(); v=op==='+'?v+b:v-b;} return v; }
+ const result=expression(); if(i!==tokens.length||!Number.isFinite(result))throw Error('Invalid calculation'); return result;
+}
+$('calculatorBtn').addEventListener('click',calcOpen);
+$('calculatorClose').addEventListener('click',calcClose);
+calcOverlay.addEventListener('click',e=>{if(e.target===calcOverlay)calcClose()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&calcOverlay.classList.contains('open'))calcClose()});
+$('calcKeys').addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-key]'); if(!btn)return; const key=btn.dataset.key;
+ if(key==='clear'){calcInput='0';calcPrevious='';}
+ else if(key==='backspace'){calcInput=calcInput.length>1?calcInput.slice(0,-1):'0';}
+ else if(key==='percent'){
+  const m=calcInput.match(/(\d+\.?\d*|\.\d+)$/); if(m)calcInput=calcInput.slice(0,-m[0].length)+String(Number(m[0])/100);
+ }
+ else if(key==='sign'){
+  const m=calcInput.match(/(\d+\.?\d*|\.\d+)$/); if(m){const n=m[0];calcInput=calcInput.slice(0,-n.length)+(n.startsWith('-')?n.slice(1):'-'+n)} else if(calcInput==='0')calcInput='-0';
+ }
+ else if(key==='equals'){
+  try{const result=calcEvaluate(calcInput);calcPrevious=calcInput+' =';calcInput=String(Number(result.toPrecision(12)));}catch(err){calcPrevious=err.message;calcInput='0';}
+ }
+ else calcAppend(key);
+ calcRender();
+});
 calculate();
 const VERSION_URL = "./version.json";
 let currentAppVersion = null;
