@@ -70,8 +70,20 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
 .weather-data{display:grid;grid-template-columns:1.2fr 1fr 1fr;align-items:center}
 .weather-block{min-width:0;min-height:76px;display:flex;align-items:center;gap:13px;padding:4px 16px;border-left:1px solid #42617e}
 .weather-block:first-child{border-left:0;padding-left:0}
-.weather-icon{width:56px;height:56px;flex:none;color:#ffb52e}
-.weather-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.weather-icon{width:66px;height:66px;flex:none;color:#ffb52e;filter:drop-shadow(0 4px 5px #0006)}
+.weather-icon svg{width:100%;height:100%;overflow:visible}
+.weather-icon .icon-stroke{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2.1}
+.weather-icon .sun-core{fill:url(#sunFill);stroke:#ffcf57;stroke-width:1.7}
+.weather-icon .sun-rays{stroke:#ffbd35;stroke-width:2.4;filter:drop-shadow(0 1px 2px #ffb52e88)}
+.weather-icon .moon-shape{fill:url(#moonFill);stroke:#d72a9d;stroke-width:1.8;filter:drop-shadow(0 2px 3px #d72a9d77)}
+.weather-icon .cloud-back{fill:url(#cloudBack);stroke:#a8c9ef;stroke-width:1.4;filter:drop-shadow(0 2px 3px #0008)}
+.weather-icon .cloud-front{fill:url(#cloudFront);stroke:#d6eaff;stroke-width:1.5;filter:drop-shadow(0 2px 3px #0008)}
+.weather-icon .rain-drop{fill:url(#rainFill);stroke:#42c9ff;stroke-width:.7;filter:drop-shadow(0 1px 2px #21baff88)}
+.weather-icon .lightning{fill:url(#boltFill);stroke:#ffcf42;stroke-width:1.2;filter:drop-shadow(0 1px 3px #ffb52e99)}
+.weather-icon .snowflake{stroke:#d9f2ff;stroke-width:1.8;filter:drop-shadow(0 1px 2px #8edcff)}
+.weather-icon .fog-line{stroke:#b8d7f4;stroke-width:2.5;filter:drop-shadow(0 1px 3px #a9d9ff88)}
+.weather-sun-times{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:15px;padding:9px 12px;border:1px solid #555c89;border-radius:999px;background:linear-gradient(100deg,rgba(46,54,91,.58),rgba(31,43,73,.78));color:#dceaff;font-size:13px;font-variant-numeric:tabular-nums}
+.sun-time{display:flex;align-items:center;gap:7px;white-space:nowrap}.sun-time strong{color:#fff;font-size:14px}.sun-time svg{width:25px;height:22px;flex:none;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}.sunrise-icon{stroke:#ffbd35}.sunset-icon{stroke:#ff8750}.sun-time-divider{height:24px;width:1px;background:#69799c}
 .weather-condition{font-size:clamp(18px,3.4vw,24px);font-weight:800;line-height:1.2;white-space:nowrap}
 .weather-temp{font-size:clamp(23px,4vw,31px);font-weight:800;line-height:1.2;margin-top:5px;color:#a9d9ff;font-variant-numeric:tabular-nums}
 .weather-qnh-icon{width:38px;height:38px;flex:none;color:#d8e8f8}
@@ -81,8 +93,8 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
 .weather-wind-icon{width:38px;height:38px;flex:none;color:#d8e8f8}
 .weather-footnote{font-size:10px;color:#91a8bf;margin-top:10px}
 .weather-loading{font-size:12px;color:var(--muted);margin-top:8px}
-@media(max-width:520px){.weather-card{padding:15px 13px}.weather-data{grid-template-columns:1.12fr .95fr .95fr}.weather-block{gap:7px;padding:3px 8px;min-height:66px}.weather-icon{width:37px;height:37px}.weather-qnh-icon,.weather-wind-icon{width:23px;height:23px}.weather-condition{font-size:clamp(13px,3.4vw,17px)}.weather-temp{font-size:clamp(18px,4vw,23px)}.weather-label{font-size:11px}.weather-reading{font-size:clamp(13px,3.3vw,17px)}.weather-location{font-size:16px}.weather-live{font-size:11px;padding:5px 9px}.weather-stale{font-size:10px;gap:5px}.weather-refresh{width:29px;height:29px}.weather-refresh svg{width:15px;height:15px}}
-@media(max-width:360px){.weather-block{padding-left:5px;padding-right:5px;gap:5px}.weather-icon{width:31px;height:31px}.weather-qnh-icon,.weather-wind-icon{width:19px;height:19px}.weather-reading{font-size:12px}.weather-condition{font-size:12px}.weather-temp{font-size:18px}}
+@media(max-width:520px){.weather-card{padding:15px 13px}.weather-data{grid-template-columns:1.12fr .95fr .95fr}.weather-block{gap:7px;padding:3px 8px;min-height:66px}.weather-icon{width:43px;height:43px}.weather-qnh-icon,.weather-wind-icon{width:23px;height:23px}.weather-condition{font-size:clamp(13px,3.4vw,17px)}.weather-temp{font-size:clamp(18px,4vw,23px)}.weather-label{font-size:11px}.weather-reading{font-size:clamp(13px,3.3vw,17px)}.weather-location{font-size:16px}.weather-live{font-size:11px;padding:5px 9px}.weather-stale{font-size:10px;gap:5px}.weather-refresh{width:29px;height:29px}.weather-refresh svg{width:15px;height:15px}}
+@media(max-width:360px){.weather-block{padding-left:5px;padding-right:5px;gap:5px}.weather-icon{width:36px;height:36px}.weather-qnh-icon,.weather-wind-icon{width:19px;height:19px}.weather-reading{font-size:12px}.weather-condition{font-size:12px}.weather-temp{font-size:18px}}
 
 
 .weather-enable{display:inline-flex;align-items:center;justify-content:center;margin-top:9px;padding:9px 13px;border:1px solid #4b9eaa;border-radius:9px;background:#173b4a;color:#dffcf7;font:600 12px inherit;cursor:pointer}
@@ -124,6 +136,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
       <div class="weather-wind-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M7 5v30M8 7h25l-5 12H8z"/><path d="M13 9l5 8m2-8 5 8m2-8 2 5"/></svg></div>
       <div><div class="weather-label">Wind</div><div class="weather-reading" id="weatherWind">—/— KTS</div></div>
     </div>
+  </div>
+  <div class="weather-sun-times" aria-label="Sunrise and sunset times">
+    <div class="sun-time"><svg class="sunrise-icon" viewBox="0 0 28 24"><path d="M3 18h22M6 18a8 8 0 0 1 16 0M14 2v4M4 8l3 3m14-3-3 3"/></svg><span>Sunrise <strong id="weatherSunrise">—:—</strong></span></div>
+    <span class="sun-time-divider"></span>
+    <div class="sun-time"><svg class="sunset-icon" viewBox="0 0 28 24"><path d="M3 18h22M6 18a8 8 0 0 1 16 0M14 2v4M4 8l3 3m14-3-3 3"/></svg><span>Sunset <strong id="weatherSunset">—:—</strong></span></div>
   </div>
   <div class="weather-footnote">*QNH is estimated from model sea-level pressure, not an official METAR/ATIS altimeter setting. Verify actual QNH and wind from approved aviation weather sources before flight.</div>
   <div class="weather-loading" id="weatherMessage" aria-live="polite">Waiting for location permission…</div>
@@ -360,38 +377,53 @@ calculate();
 // Local weather display. Open-Meteo provides modelled current conditions; pressure is a sea-level estimate, not an official METAR QNH.
 const WEATHER_CACHE_KEY = "loadTrimWeatherCacheV1";
 let weatherBusy = false;
-function weatherCondition(code){
-  if(code===0)return ["Clear sky","sun"];
-  if(code===1)return ["Mainly clear","suncloud"];
-  if(code===2)return ["Partly cloudy","cloudsun"];
-  if(code===3)return ["Overcast","cloud"];
-  if([45,48].includes(code))return ["Fog","fog"];
-  if([51,53,55,56,57].includes(code))return ["Drizzle","rain"];
-  if([61,63,65,66,67,80,81,82].includes(code))return ["Rain","rain"];
-  if([71,73,75,77,85,86].includes(code))return ["Snow","snow"];
-  if([95,96,99].includes(code))return ["Thunderstorm","storm"];
-  return ["Current conditions","cloud"];
+function weatherIsNight(data){
+ const now=Date.now(),rise=data.sunrise?new Date(data.sunrise).getTime():NaN,set=data.sunset?new Date(data.sunset).getTime():NaN;
+ if(Number.isFinite(rise)&&Number.isFinite(set))return now<rise||now>=set;
+ return data.isDay===0;
+}
+function weatherCondition(data){
+ const code=data.code,cloud=Number(data.cloudCover)||0,precip=Math.max(Number(data.precipitation)||0,Number(data.rain)||0,Number(data.showers)||0),night=weatherIsNight(data);
+ if([45,48].includes(code))return ['Fog','fog'];
+ if([95,96,99].includes(code))return ['Thunderstorm','storm'];
+ if([71,73,75,77,85,86].includes(code))return ['Snow','snow'];
+ if([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)||precip>0.05){
+  if(precip>=4||[65,67,82].includes(code))return ['Heavy rain','heavyRain'];
+  if(precip>=1||[53,55,63,81].includes(code))return ['Moderate rain','moderateRain'];
+  return ['Light rain','lightRain'];
+ }
+ if(cloud>=85||code===3)return ['Cloudy','cloud'];
+ if(cloud>=45||code===2)return [night?'Partly cloudy':'Partly cloudy',night?'nightCloud':'suncloud'];
+ if(cloud>=15||code===1)return ['Mostly clear',night?'moon':'sun'];
+ return ['Clear sky',night?'moon':'sun'];
 }
 function weatherIcon(kind){
- const paths={
- sun:'<circle cx="24" cy="24" r="8"/><path d="M24 3v6M24 39v6M3 24h6M39 24h6M9.2 9.2l4.2 4.2m21.2 21.2 4.2 4.2m0-29.6-4.2 4.2M13.4 34.6l-4.2 4.2"',
- suncloud:'<circle cx="17" cy="15" r="6"/><path d="M17 3v3M5 15h3M8.5 6.5l2 2M25.5 6.5l-2 2"/><path d="M13 34h21a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-2 16Z"',
- cloudsun:'<circle cx="17" cy="13" r="6"/><path d="M17 2v3M6 13h3M9 5l2 2"/><path d="M12 35h21a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-2 16Z"',
- cloud:'<path d="M11 34h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2 9 9 0 0 0-1 18Z"/>',
- fog:'<path d="M11 27h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16ZM5 33h30M9 39h22"/>',
- rain:'<path d="M11 25h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16Z"/><path d="m16 30-3 6m12-6-3 6m12-6-3 6"/>',
- snow:'<path d="M11 23h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16Z"/><path d="M16 29v9m-4-4 8 0m-7-3 6 6m10-8v9m-4-4 8 0m-7-3 6 6"/>',
- storm:'<path d="M11 24h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16Z"/><path d="m23 27-5 9h6l-2 8 9-12h-7l3-5"/>'
- };
- return '<svg viewBox="0 0 48 48">'+(paths[kind]||paths.cloud)+'</svg>';
+ const defs='<defs><linearGradient id="sunFill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff3a3"/><stop offset="1" stop-color="#ff9d20"/></linearGradient><linearGradient id="moonFill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f45ab9"/><stop offset="1" stop-color="#a20d76"/></linearGradient><linearGradient id="cloudFront" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f4f8ff"/><stop offset=".48" stop-color="#b8d1f2"/><stop offset="1" stop-color="#6688b8"/></linearGradient><linearGradient id="cloudBack" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dceaff"/><stop offset="1" stop-color="#6f8fb9"/></linearGradient><linearGradient id="rainFill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9beaff"/><stop offset="1" stop-color="#19a9ef"/></linearGradient><linearGradient id="boltFill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff27a"/><stop offset="1" stop-color="#ff9f00"/></linearGradient></defs>';
+ const sun='<g class="sun-rays"><path d="M24 3v6M24 39v6M3 24h6M39 24h6M9.2 9.2l4.2 4.2m21.2 21.2 4.2 4.2m0-29.6-4.2 4.2M13.4 34.6l-4.2 4.2"/></g><circle class="sun-core" cx="24" cy="24" r="8"/>';
+ const moon='<path class="moon-shape" d="M30 5a19 19 0 1 0 13 29A17 17 0 0 1 30 5Z"/>';
+ const cloud='<g><path class="cloud-back" d="M13 34h20a8 8 0 0 0 1-16 12 12 0 0 0-22-2 9 9 0 0 0 1 18Z"/><path class="cloud-front" d="M9 36h24a8 8 0 0 0 1-16 11 11 0 0 0-20-2 9 9 0 0 0-5 18Z"/></g>';
+ const drops=n=>Array.from({length:n},(_,i)=>{const xs=n===1?[24]:n===2?[17,31]:n===3?[12,24,36]:n===4?[10,20,30,40]:[8,18,28,38,24,14,34];const x=xs[i]||24,y=38+(i%2)*2;return `<path class="rain-drop" d="M${x} ${y}c-1.8 3-3 4.5-3 6.2a3 3 0 0 0 6 0c0-1.7-1.2-3.2-3-6.2Z"/>`}).join('');
+ let body='';
+ if(kind==='sun')body=sun;
+ else if(kind==='moon')body=moon;
+ else if(kind==='suncloud')body=sun+'<g transform="translate(7 5) scale(.86)">'+cloud+'</g>';
+ else if(kind==='nightCloud')body=moon+'<g transform="translate(7 7) scale(.82)">'+cloud+'</g>';
+ else if(kind==='cloud')body=cloud;
+ else if(kind==='fog')body='<g class="fog-line"><path d="M8 17h31M4 25h37M10 33h29"/></g>';
+ else if(kind==='lightRain'||kind==='moderateRain'||kind==='heavyRain')body=cloud+drops(kind==='lightRain'?2:kind==='moderateRain'?4:7);
+ else if(kind==='snow')body=cloud+'<g class="snowflake"><path d="M14 39v7m-3.5-3.5h7m-6-2.5 5 5m-5 0 5-5M31 39v7m-3.5-3.5h7m-6-2.5 5 5m-5 0 5-5"/></g>';
+ else if(kind==='storm')body=cloud+drops(4)+'<path class="lightning" d="m25 29-7 11h6l-2 8 11-14h-7l3-5Z"/>';
+ else body=cloud;
+ return `<svg viewBox="0 0 48 48" role="img" aria-hidden="true">${defs}${body}</svg>`;
 }
+function weatherTime(value){if(!value)return '—:—';const d=new Date(value);return Number.isNaN(d.getTime())?'—:—':d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});}
 function weatherAgeLabel(timestamp){const mins=Math.max(0,Math.floor((Date.now()-timestamp)/60000));if(mins<1)return 'Last updated just now';if(mins<60)return `Last updated ${mins} min${mins===1?'':'s'} ago`;const h=Math.floor(mins/60),m=mins%60;return `Last updated ${h}h${m?` ${m}m`:''} ago`;}
 function renderWeather(data,forceStale=false){
  $('weatherEnable').hidden=true;
  const age=Date.now()-data.fetchedAt, stale=forceStale||age>=60*1000;
  $('weatherLiveState').hidden=stale;$('weatherStaleState').hidden=!stale;
  if(stale)$('weatherUpdatedText').textContent=weatherAgeLabel(data.fetchedAt);
- const [label,icon]=weatherCondition(data.code);$('weatherCondition').textContent=label;$('weatherSymbol').innerHTML=weatherIcon(icon);
+ const [label,icon]=weatherCondition(data);$('weatherCondition').textContent=label;$('weatherSymbol').innerHTML=weatherIcon(icon);$('weatherSunrise').textContent=weatherTime(data.sunrise);$('weatherSunset').textContent=weatherTime(data.sunset);
  $('weatherTemp').textContent=Number.isFinite(data.temp)?`${Math.round(data.temp)}°C`:'—°C';
  $('weatherQnh').textContent=Number.isFinite(data.pressure)?`${(data.pressure*0.029529983).toFixed(2)} inHg`:'— inHg';
  $('weatherWind').textContent=Number.isFinite(data.windDir)&&Number.isFinite(data.windSpeed)?`${String(Math.round(data.windDir)%360).padStart(3,'0')}/${String(Math.round(data.windSpeed)).padStart(2,'0')} KTS`:'—/— KTS';
@@ -417,10 +449,10 @@ async function refreshWeather(){
   if(!('geolocation' in navigator))throw Error('Location is not supported by this browser.');
   const pos=await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:false,timeout:12000,maximumAge:10*60*1000}));
   const lat=pos.coords.latitude,lon=pos.coords.longitude;
-  const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m&wind_speed_unit=kn&timezone=auto`;
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation,rain,showers,snowfall,is_day&daily=sunrise,sunset&wind_speed_unit=kn&timezone=auto`;
   const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw Error('Weather service unavailable.');
   const json=await response.json(),c=json.current||{};
-  const data={temp:Number(c.temperature_2m),code:Number(c.weather_code),pressure:Number(c.pressure_msl),windSpeed:Number(c.wind_speed_10m),windDir:Number(c.wind_direction_10m),observedAt:c.time?new Date(c.time).getTime():Date.now(),fetchedAt:Date.now()};
+  const data={temp:Number(c.temperature_2m),code:Number(c.weather_code),pressure:Number(c.pressure_msl),windSpeed:Number(c.wind_speed_10m),windDir:Number(c.wind_direction_10m),cloudCover:Number(c.cloud_cover),precipitation:Number(c.precipitation),rain:Number(c.rain),showers:Number(c.showers),snowfall:Number(c.snowfall),isDay:Number(c.is_day),sunrise:json.daily?.sunrise?.[0]||null,sunset:json.daily?.sunset?.[0]||null,observedAt:c.time?new Date(c.time).getTime():Date.now(),fetchedAt:Date.now()};
   if(!Number.isFinite(data.temp)||!Number.isFinite(data.pressure))throw Error('Weather data is incomplete.');
   localStorage.setItem(WEATHER_CACHE_KEY,JSON.stringify(data));renderWeather(data);
  }catch(err){
