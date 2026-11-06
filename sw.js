@@ -1,4 +1,4 @@
-const CACHE_NAME = "load-trim-offline-v1.1.2";
+const CACHE_NAME = "load-trim-offline-v1.1.4";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./version.json"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
@@ -18,8 +18,9 @@ self.addEventListener("fetch", event => {
     }).catch(() => caches.match("./version.json")));
     return;
   }
+  if (url.origin !== self.location.origin) return;
   event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-    if (response.ok && url.origin === self.location.origin) caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
+    if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
     return response;
   }).catch(() => caches.match("./index.html"))));
 });

@@ -1,15 +1,19 @@
-LOAD & TRIM — VERSION 1.1.1
+LOAD & TRIM — VERSION 1.1.4
 
-Changes in this release:
-- Applies the user-approved input layout: aircraft registration and fuel on the first row; pilot and co-pilot on the second row.
-- Removes the basic empty weight / empty-weight arm / taxi fuel hint beneath aircraft registration.
-- Places Save, Calculator, and Reset in one three-column row. Buttons use the approved compact rectangular style, 50px desktop/default height, icons above labels, and spacing above the button row.
-- Retains blank-by-default numeric inputs; blank values are treated as zero.
-- Fuel remains entered in litres and converted to kg by the existing calculation.
-- Retains the popup calculator with arithmetic, decimals, percentage, sign change, clear (C), and backspace (⌫).
-- Retains S/R CG envelopes, marker colours, saved calculations, offline support, and update notification.
+Changes:
+- Adds a visible “Enable location & get weather” button. Tap it to trigger Chrome's location permission request and retrieve local weather.
+- Removes the automatic location request on page load.
+- Keeps the weather card and 30-minute freshness indicator.
+- Pressure is model-estimated sea-level pressure converted to inHg, not official METAR/ATIS QNH. Verify actual QNH and wind using approved aviation weather sources before flight.
+- Retains the existing aircraft calculator, CG envelope display, saved calculations, calculator popup, and offline PWA files.
 
 Deployment:
-Replace the five app files in the ROOT of the existing GitHub Pages repository: index.html, sw.js, version.json, manifest.webmanifest, and icon.svg. Commit the changes. The existing app URL remains unchanged.
+1. Extract this ZIP.
+2. Replace the six existing repository-root files: index.html, sw.js, version.json, manifest.webmanifest, icon.svg, README.txt.
+3. Commit/publish the changes to GitHub Pages.
+4. Open the app in Chrome and tap “Enable location & get weather”.
+5. If Chrome asks, choose Allow. Internet is required to retrieve weather; the calculator remains available offline.
 
-Saved calculations remain in this browser/device local storage. Export/import is available for backup or transfer; there is no automatic cross-device sync.
+Important:
+- Do not clear Chrome site data; saved calculations are stored locally in the browser.
+- This tool is a training aid only. Verify all weight-and-balance inputs and limits against the current approved aircraft POH/AFM and aircraft-specific data. Do not use it as the sole basis for flight release.

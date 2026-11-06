@@ -56,6 +56,39 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
 .calc-keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.calc-key{min-height:56px;border:1px solid #354b63;border-radius:13px;background:#20364c;color:var(--text);font:700 19px system-ui;cursor:pointer;touch-action:manipulation}.calc-key:active{transform:scale(.97);background:#2a4662}.calc-key.function{background:#1a2d42;color:#b9cbdc}.calc-key.operator{color:var(--accent2);background:#183746;border-color:#315b62}.calc-key.equals{background:var(--accent);border-color:var(--accent);color:#09231f}.calc-key.backspace{font-size:21px}.calc-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:11px}
 @media(max-width:380px){.calc-sheet{padding:14px}.calc-keys{gap:7px}.calc-key{min-height:51px}}
 
+
+/* Local weather and wind card */
+.weather-card{grid-column:1/-1;padding:18px 20px;background:linear-gradient(145deg,rgba(24,43,65,.98),rgba(12,29,47,.99));border:1px solid #355b80;border-radius:20px;box-shadow:0 10px 30px #0002}
+.weather-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.weather-location{display:flex;align-items:center;gap:10px;font-size:clamp(17px,3.6vw,23px);font-weight:800;letter-spacing:-.02em}
+.weather-location svg{width:25px;height:25px;flex:none;stroke:#eef5fc;fill:none;stroke-width:2}
+.weather-live{font-size:13px;font-weight:800;color:#42e879;background:#06391f;border:1px solid #087c3b;border-radius:999px;padding:6px 12px;white-space:nowrap}
+.weather-stale{display:flex;align-items:center;gap:9px;color:#d2ddeb;font-size:12px;font-style:italic;white-space:nowrap}
+.weather-refresh{width:34px;height:34px;display:grid;place-items:center;border:1px solid #355b80;background:#1b3854;color:#eaf4ff;border-radius:50%;cursor:pointer}
+.weather-refresh svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.weather-refresh:disabled{opacity:.55;cursor:wait}
+.weather-data{display:grid;grid-template-columns:1.2fr 1fr 1fr;align-items:center}
+.weather-block{min-width:0;min-height:76px;display:flex;align-items:center;gap:13px;padding:4px 16px;border-left:1px solid #42617e}
+.weather-block:first-child{border-left:0;padding-left:0}
+.weather-icon{width:56px;height:56px;flex:none;color:#ffb52e}
+.weather-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.weather-condition{font-size:clamp(18px,3.4vw,24px);font-weight:800;line-height:1.2;white-space:nowrap}
+.weather-temp{font-size:clamp(23px,4vw,31px);font-weight:800;line-height:1.2;margin-top:5px;color:#a9d9ff;font-variant-numeric:tabular-nums}
+.weather-qnh-icon{width:38px;height:38px;flex:none;color:#d8e8f8}
+.weather-qnh-icon svg,.weather-wind-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.weather-label{font-size:14px;color:#c4d5e7;margin-bottom:2px}
+.weather-reading{font-size:clamp(20px,3.5vw,27px);font-weight:800;line-height:1.2;color:#a9d9ff;white-space:nowrap;font-variant-numeric:tabular-nums}
+.weather-wind-icon{width:38px;height:38px;flex:none;color:#d8e8f8}
+.weather-footnote{font-size:10px;color:#91a8bf;margin-top:10px}
+.weather-loading{font-size:12px;color:var(--muted);margin-top:8px}
+@media(max-width:520px){.weather-card{padding:15px 13px}.weather-data{grid-template-columns:1.12fr .95fr .95fr}.weather-block{gap:7px;padding:3px 8px;min-height:66px}.weather-icon{width:37px;height:37px}.weather-qnh-icon,.weather-wind-icon{width:23px;height:23px}.weather-condition{font-size:clamp(13px,3.4vw,17px)}.weather-temp{font-size:clamp(18px,4vw,23px)}.weather-label{font-size:11px}.weather-reading{font-size:clamp(13px,3.3vw,17px)}.weather-location{font-size:16px}.weather-live{font-size:11px;padding:5px 9px}.weather-stale{font-size:10px;gap:5px}.weather-refresh{width:29px;height:29px}.weather-refresh svg{width:15px;height:15px}}
+@media(max-width:360px){.weather-block{padding-left:5px;padding-right:5px;gap:5px}.weather-icon{width:31px;height:31px}.weather-qnh-icon,.weather-wind-icon{width:19px;height:19px}.weather-reading{font-size:12px}.weather-condition{font-size:12px}.weather-temp{font-size:18px}}
+
+
+.weather-enable{display:inline-flex;align-items:center;justify-content:center;margin-top:9px;padding:9px 13px;border:1px solid #4b9eaa;border-radius:9px;background:#173b4a;color:#dffcf7;font:600 12px inherit;cursor:pointer}
+.weather-enable:disabled{opacity:.55;cursor:wait}
+[hidden]{display:none !important;}
+
 </style>
 </head>
 <body>
@@ -71,6 +104,32 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
   <p class="sub">Choose an aircraft, enter fuel and crew weights, and calculate take-off weight and centre of gravity.</p>
 </header>
 <main>
+
+<section class="weather-card" aria-label="Local weather and wind observation">
+  <div class="weather-top">
+    <div class="weather-location"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.7"/></svg><span>Current Location</span></div>
+    <div id="weatherLiveState" class="weather-live">● Live</div>
+    <div id="weatherStaleState" class="weather-stale" hidden><span id="weatherUpdatedText">Last updated —</span><button id="weatherRefresh" class="weather-refresh" type="button" aria-label="Refresh weather"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7.5 7.5 0 0 1 19 6l1 1M4 17l1 1a7.5 7.5 0 0 0 13.5-3"/></svg></button></div>
+  </div>
+  <div class="weather-data">
+    <div class="weather-block">
+      <div class="weather-icon" id="weatherSymbol" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="8"/><path d="M24 3v6M24 39v6M3 24h6M39 24h6M9.2 9.2l4.2 4.2m21.2 21.2 4.2 4.2m0-29.6-4.2 4.2M13.4 34.6l-4.2 4.2"/></svg></div>
+      <div><div class="weather-condition" id="weatherCondition">Weather unavailable</div><div class="weather-temp" id="weatherTemp">—°C</div></div>
+    </div>
+    <div class="weather-block">
+      <div class="weather-qnh-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="M20 7v3M33 20h-3M20 33v-3M7 20h3M20 20l8-8"/><circle cx="20" cy="20" r="1.7"/></svg></div>
+      <div><div class="weather-label">QNH*</div><div class="weather-reading" id="weatherQnh">— inHg</div></div>
+    </div>
+    <div class="weather-block">
+      <div class="weather-wind-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M7 5v30M8 7h25l-5 12H8z"/><path d="M13 9l5 8m2-8 5 8m2-8 2 5"/></svg></div>
+      <div><div class="weather-label">Wind</div><div class="weather-reading" id="weatherWind">—/— KTS</div></div>
+    </div>
+  </div>
+  <div class="weather-footnote">*QNH is estimated from model sea-level pressure, not an official METAR/ATIS altimeter setting. Verify actual QNH and wind from approved aviation weather sources before flight.</div>
+  <div class="weather-loading" id="weatherMessage" aria-live="polite">Waiting for location permission…</div>
+  <button id="weatherEnable" class="weather-enable" type="button">Enable location &amp; get weather</button>
+</section>
+
   <section class="card input-card">
     <h2 class="section-title">Flight inputs</h2>
     <div class="form-grid">
@@ -297,6 +356,76 @@ $('calcKeys').addEventListener('click',e=>{
  calcRender();
 });
 calculate();
+
+// Local weather display. Open-Meteo provides modelled current conditions; pressure is a sea-level estimate, not an official METAR QNH.
+const WEATHER_CACHE_KEY = "loadTrimWeatherCacheV1";
+let weatherBusy = false;
+function weatherCondition(code){
+  if(code===0)return ["Clear sky","sun"];
+  if(code===1)return ["Mainly clear","suncloud"];
+  if(code===2)return ["Partly cloudy","cloudsun"];
+  if(code===3)return ["Overcast","cloud"];
+  if([45,48].includes(code))return ["Fog","fog"];
+  if([51,53,55,56,57].includes(code))return ["Drizzle","rain"];
+  if([61,63,65,66,67,80,81,82].includes(code))return ["Rain","rain"];
+  if([71,73,75,77,85,86].includes(code))return ["Snow","snow"];
+  if([95,96,99].includes(code))return ["Thunderstorm","storm"];
+  return ["Current conditions","cloud"];
+}
+function weatherIcon(kind){
+ const paths={
+ sun:'<circle cx="24" cy="24" r="8"/><path d="M24 3v6M24 39v6M3 24h6M39 24h6M9.2 9.2l4.2 4.2m21.2 21.2 4.2 4.2m0-29.6-4.2 4.2M13.4 34.6l-4.2 4.2"',
+ suncloud:'<circle cx="17" cy="15" r="6"/><path d="M17 3v3M5 15h3M8.5 6.5l2 2M25.5 6.5l-2 2"/><path d="M13 34h21a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-2 16Z"',
+ cloudsun:'<circle cx="17" cy="13" r="6"/><path d="M17 2v3M6 13h3M9 5l2 2"/><path d="M12 35h21a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-2 16Z"',
+ cloud:'<path d="M11 34h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2 9 9 0 0 0-1 18Z"/>',
+ fog:'<path d="M11 27h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16ZM5 33h30M9 39h22"/>',
+ rain:'<path d="M11 25h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16Z"/><path d="m16 30-3 6m12-6-3 6m12-6-3 6"/>',
+ snow:'<path d="M11 23h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16Z"/><path d="M16 29v9m-4-4 8 0m-7-3 6 6m10-8v9m-4-4 8 0m-7-3 6 6"/>',
+ storm:'<path d="M11 24h22a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-3 16Z"/><path d="m23 27-5 9h6l-2 8 9-12h-7l3-5"/>'
+ };
+ return '<svg viewBox="0 0 48 48">'+(paths[kind]||paths.cloud)+'</svg>';
+}
+function weatherAgeLabel(timestamp){const mins=Math.max(0,Math.floor((Date.now()-timestamp)/60000));if(mins<1)return 'Last updated just now';if(mins<60)return `Last updated ${mins} min${mins===1?'':'s'} ago`;const h=Math.floor(mins/60),m=mins%60;return `Last updated ${h}h${m?` ${m}m`:''} ago`;}
+function renderWeather(data){
+ $('weatherEnable').hidden=true;
+ const age=Date.now()-data.fetchedAt, stale=age>=30*60*1000;
+ $('weatherLiveState').hidden=stale;$('weatherStaleState').hidden=!stale;
+ if(stale)$('weatherUpdatedText').textContent=weatherAgeLabel(data.fetchedAt);
+ const [label,icon]=weatherCondition(data.code);$('weatherCondition').textContent=label;$('weatherSymbol').innerHTML=weatherIcon(icon);
+ $('weatherTemp').textContent=Number.isFinite(data.temp)?`${Math.round(data.temp)}°C`:'—°C';
+ $('weatherQnh').textContent=Number.isFinite(data.pressure)?`${(data.pressure*0.029529983).toFixed(2)} inHg`:'— inHg';
+ $('weatherWind').textContent=Number.isFinite(data.windDir)&&Number.isFinite(data.windSpeed)?`${String(Math.round(data.windDir)%360).padStart(3,'0')}/${String(Math.round(data.windSpeed)).padStart(2,'0')} KTS`:'—/— KTS';
+ $('weatherMessage').textContent=`Weather model update: ${new Date(data.observedAt||data.fetchedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+}
+function weatherSetStale(){try{const saved=JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)||'null');if(saved)renderWeather(saved);}catch(e){}}
+async function refreshWeather(){
+ if(weatherBusy)return;weatherBusy=true;const btn=$('weatherRefresh');btn.disabled=true;$('weatherMessage').textContent='Getting local weather…';
+ try{
+  if(!('geolocation' in navigator))throw Error('Location is not supported by this browser.');
+  const pos=await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:false,timeout:12000,maximumAge:10*60*1000}));
+  const lat=pos.coords.latitude,lon=pos.coords.longitude;
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m&wind_speed_unit=kn&timezone=auto`;
+  const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw Error('Weather service unavailable.');
+  const json=await response.json(),c=json.current||{};
+  const data={temp:Number(c.temperature_2m),code:Number(c.weather_code),pressure:Number(c.pressure_msl),windSpeed:Number(c.wind_speed_10m),windDir:Number(c.wind_direction_10m),observedAt:c.time?new Date(c.time).getTime():Date.now(),fetchedAt:Date.now()};
+  if(!Number.isFinite(data.temp)||!Number.isFinite(data.pressure))throw Error('Weather data is incomplete.');
+  localStorage.setItem(WEATHER_CACHE_KEY,JSON.stringify(data));renderWeather(data);
+ }catch(err){
+  $('weatherEnable').hidden=false;
+  weatherSetStale();const msg=err&&err.code===1?'Location permission denied. Allow location access to get weather.':(err&&err.code===3?'Location request timed out. Tap refresh to retry.':'Unable to update weather. Check internet and location permission.');
+  $('weatherMessage').textContent=msg;
+  const saved=(()=>{try{return JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)||'null')}catch{return null}})();
+  if(!saved){$('weatherLiveState').hidden=true;$('weatherStaleState').hidden=false;$('weatherUpdatedText').textContent='No saved weather';}
+ }finally{weatherBusy=false;btn.disabled=false;}
+}
+$('weatherRefresh').addEventListener('click',refreshWeather);
+$('weatherEnable').addEventListener('click',async()=>{
+ const btn=$('weatherEnable');btn.disabled=true;btn.textContent='Requesting location…';
+ await refreshWeather();
+ btn.disabled=false;btn.textContent='Enable location & get weather';
+});
+weatherSetStale();
+
 const VERSION_URL = "./version.json";
 let currentAppVersion = null;
 async function checkForAppUpdate() {
