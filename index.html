@@ -386,9 +386,9 @@ function weatherIcon(kind){
  return '<svg viewBox="0 0 48 48">'+(paths[kind]||paths.cloud)+'</svg>';
 }
 function weatherAgeLabel(timestamp){const mins=Math.max(0,Math.floor((Date.now()-timestamp)/60000));if(mins<1)return 'Last updated just now';if(mins<60)return `Last updated ${mins} min${mins===1?'':'s'} ago`;const h=Math.floor(mins/60),m=mins%60;return `Last updated ${h}h${m?` ${m}m`:''} ago`;}
-function renderWeather(data){
+function renderWeather(data,forceStale=false){
  $('weatherEnable').hidden=true;
- const age=Date.now()-data.fetchedAt, stale=age>=30*60*1000;
+ const age=Date.now()-data.fetchedAt, stale=forceStale||age>=60*1000;
  $('weatherLiveState').hidden=stale;$('weatherStaleState').hidden=!stale;
  if(stale)$('weatherUpdatedText').textContent=weatherAgeLabel(data.fetchedAt);
  const [label,icon]=weatherCondition(data.code);$('weatherCondition').textContent=label;$('weatherSymbol').innerHTML=weatherIcon(icon);
@@ -397,7 +397,20 @@ function renderWeather(data){
  $('weatherWind').textContent=Number.isFinite(data.windDir)&&Number.isFinite(data.windSpeed)?`${String(Math.round(data.windDir)%360).padStart(3,'0')}/${String(Math.round(data.windSpeed)).padStart(2,'0')} KTS`:'—/— KTS';
  $('weatherMessage').textContent=`Weather model update: ${new Date(data.observedAt||data.fetchedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
 }
-function weatherSetStale(){try{const saved=JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)||'null');if(saved)renderWeather(saved);}catch(e){}}
+function getSavedWeather(){try{return JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)||'null')}catch(e){return null}}
+function weatherSetStale(forceStale=false){const saved=getSavedWeather();if(saved)renderWeather(saved,forceStale);else{$('weatherLiveState').hidden=true;$('weatherStaleState').hidden=false;$('weatherUpdatedText').textContent='No saved weather';}}
+function updateWeatherAge(){const saved=getSavedWeather();if(saved)renderWeather(saved);}
+async function tryAutoWeatherOnOpen(){
+ // Avoid prompting on page load. If location was already granted, refresh automatically.
+ try{
+  if(!('geolocation' in navigator))return;
+  if(navigator.permissions&&navigator.permissions.query){
+   const permission=await navigator.permissions.query({name:'geolocation'});
+   if(permission.state==='granted'){await refreshWeather();return;}
+  }
+ }catch(e){}
+ $('weatherEnable').hidden=false;
+} 
 async function refreshWeather(){
  if(weatherBusy)return;weatherBusy=true;const btn=$('weatherRefresh');btn.disabled=true;$('weatherMessage').textContent='Getting local weather…';
  try{
@@ -412,7 +425,7 @@ async function refreshWeather(){
   localStorage.setItem(WEATHER_CACHE_KEY,JSON.stringify(data));renderWeather(data);
  }catch(err){
   $('weatherEnable').hidden=false;
-  weatherSetStale();const msg=err&&err.code===1?'Location permission denied. Allow location access to get weather.':(err&&err.code===3?'Location request timed out. Tap refresh to retry.':'Unable to update weather. Check internet and location permission.');
+  weatherSetStale(true);const msg=err&&err.code===1?'Location permission denied. Allow location access to get weather.':(err&&err.code===3?'Location request timed out. Tap refresh to retry.':'Unable to update weather. Check internet and location permission.');
   $('weatherMessage').textContent=msg;
   const saved=(()=>{try{return JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY)||'null')}catch{return null}})();
   if(!saved){$('weatherLiveState').hidden=true;$('weatherStaleState').hidden=false;$('weatherUpdatedText').textContent='No saved weather';}
@@ -425,6 +438,9 @@ $('weatherEnable').addEventListener('click',async()=>{
  btn.disabled=false;btn.textContent='Enable location & get weather';
 });
 weatherSetStale();
+tryAutoWeatherOnOpen();
+// Switch from Live to the last-updated state at the 60-second mark.
+setInterval(updateWeatherAge,1000);
 
 const VERSION_URL = "./version.json";
 let currentAppVersion = null;

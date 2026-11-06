@@ -17,3 +17,12 @@ Deployment:
 Important:
 - Do not clear Chrome site data; saved calculations are stored locally in the browser.
 - This tool is a training aid only. Verify all weight-and-balance inputs and limits against the current approved aircraft POH/AFM and aircraft-specific data. Do not use it as the sole basis for flight release.
+
+
+Version 1.1.5 weather behaviour:
+- When the app opens, it automatically refreshes weather if location permission was already granted in Chrome.
+- If permission has not yet been granted, tap “Enable location & get weather” once and allow access.
+- After a successful fetch, “Live” is shown for 60 seconds.
+- After 60 seconds, the card shows the elapsed last-updated time and a refresh button.
+- Tapping refresh fetches new data and restarts the 60-second Live period. If refresh fails, the previous readings remain visible with the last-updated time and refresh button.
+- Weather is model-based; the displayed pressure is not official METAR/ATIS QNH. Verify actual aviation weather before flight.

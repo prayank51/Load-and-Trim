@@ -1,4 +1,4 @@
 {
-  "version": "1.1.4",
-  "releaseNotes": "Adds a tap-to-request location action for the local weather card; preserves calculator, CG, saved calculations and offline support."
+  "version": "1.1.5",
+  "releaseNotes": "Refreshes weather automatically on app open when location permission is already granted. Shows Live for 60 seconds after a successful fetch, then shows last-updated time and a manual refresh button. Preserves saved calculations and offline support."
 }
