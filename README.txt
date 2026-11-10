@@ -1,4 +1,4 @@
-LOAD & TRIM PWA — VERSION 1.1.6
+LOAD & TRIM PWA — VERSION 1.1.7
 
 WHAT'S NEW
 - Adds dimensional 3D-style weather icons matching the approved reference design.
@@ -16,10 +16,12 @@ UPDATE INSTRUCTIONS
 3. Replace the six files in the repository root with the six files from this ZIP:
    index.html, sw.js, version.json, manifest.webmanifest, icon.svg, README.txt
 4. Commit the changes and wait for GitHub Pages to publish.
-5. Reopen the installed app. It should detect version 1.1.6 and offer the update.
+5. Reopen the installed app. It should detect version 1.1.7 and offer the update.
 
 DATA PRESERVATION
 This update does not intentionally clear local browser storage or saved calculations. Do not clear site data when updating.
 
 WEATHER NOTE
 Weather values are model-based. QNH is estimated from model sea-level pressure and is not an official METAR/ATIS altimeter setting. Always verify actual QNH, wind and weather through approved aviation sources before flight. This app is a training aid, not an operational flight-planning source.
+
+Version 1.1.7: Adds VT-TLB as a multi-engine aircraft. VT-TLB uses the supplied empty weight/arm, crew arms and fuel arm; no taxi deduction, ramp section or CG graph. Fuel limits: 400 L for VT-TLB and 200 L for the nine single-engine aircraft.

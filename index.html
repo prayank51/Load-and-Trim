@@ -16,7 +16,7 @@ main{max-width:980px;margin:auto;padding:0 14px 34px;display:grid;gap:14px}
 .card{background:linear-gradient(150deg,rgba(24,43,65,.97),rgba(17,32,49,.98));border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 10px 30px #0002}
 .section-title{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 14px}
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}label{font-size:12px;color:#b8c8d8;font-weight:650}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field-error{display:none;color:#ff7777;font-size:12px;font-weight:750;line-height:1.3}.field-error.show{display:block}.input-invalid{border-color:#ff7777!important;outline-color:#ff7777!important}.field.full{grid-column:1/-1}label{font-size:12px;color:#b8c8d8;font-weight:650}
 input,select{width:100%;min-width:0;background:#0d1a29;border:1px solid #354b63;border-radius:11px;padding:13px 12px;color:var(--text);font:inherit;outline:none}
 input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd22}input[type=number]{font-variant-numeric:tabular-nums}
 .hint{font-size:11px;color:var(--muted)}
@@ -151,7 +151,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
     <h2 class="section-title">Flight inputs</h2>
     <div class="form-grid">
       <div class="field"><label for="aircraft">Aircraft registration</label><select id="aircraft"></select></div>
-      <div class="field"><label for="fuel">Fuel loaded (litres)</label><input id="fuel" type="number" min="0" step="0.1" placeholder="Enter value" inputmode="decimal"></div>
+      <div class="field"><label for="fuel">Fuel loaded (litres)</label><input id="fuel" type="number" min="0" step="0.1" placeholder="Enter value" inputmode="decimal"><div id="fuelError" class="field-error" role="alert"></div></div>
       <div class="field"><label for="pilot">Pilot weight (kg)</label><input id="pilot" type="number" min="0" step="0.1" placeholder="Enter value" inputmode="decimal"></div>
       <div class="field"><label for="copilot">Co-pilot weight (kg)</label><input id="copilot" type="number" min="0" step="0.1" placeholder="Enter value" inputmode="decimal"></div>
     </div>
@@ -177,7 +177,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
       <div class="metric primary"><div class="k">Take-off weight</div><div class="v" id="tow">—</div><div class="u">kg</div></div>
       <div class="metric"><div class="k">Centre of gravity</div><div class="v" id="cg">—</div><div class="u">inches</div></div>
       <div class="metric"><div class="k">Take-off weight</div><div class="v" id="towLbs">—</div><div class="u">lb</div></div>
-      <div class="metric"><div class="k">Ramp weight</div><div class="v" id="ramp">—</div><div class="u">kg before taxi fuel deduction</div></div>
+      <div class="metric" id="rampMetric"><div class="k">Ramp weight</div><div class="v" id="ramp">—</div><div class="u">kg before taxi fuel deduction</div></div>
     </div>
     <div style="height:16px"></div>
     <div class="note">Training / planning aid only. Always verify calculations, aircraft data, weight limits and CG envelope against the current approved aircraft documentation and your operator's procedures before flight.</div>
@@ -188,7 +188,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
       <thead><tr><th>Item</th><th>Weight (kg)</th><th>Arm (in)</th><th>Moment</th></tr></thead>
       <tbody id="breakdown"></tbody>
     </table>
-    <div class="hint" style="margin-top:12px">Fuel density: 0.72 kg/L · Fuel arm: 48 in · Pilot stations: 37 in. Taxi-fuel values are taken from your workbook.</div>
+    <div class="hint" id="calculationHint" style="margin-top:12px">Fuel density: 0.72 kg/L · Fuel arm: 48 in · Pilot stations: 37 in. Taxi-fuel values are taken from your workbook.</div>
     <div class="actions">
       <button class="btn" id="exportBtn">Export saved records</button>
       <button class="btn" id="importBtn">Import records</button>
@@ -196,7 +196,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #65d6bd
     </div>
     <div class="status" id="recordsStatus" aria-live="polite"></div>
   </section>
-  <section class="card envelope-card" style="grid-column:1/-1">
+  <section class="card envelope-card" id="envelopeSection" style="grid-column:1/-1">
     <h2 class="section-title">Centre of gravity envelope · <span id="envelopeModel">—</span></h2>
     <div class="hint" id="envelopeCaption">Envelope selected automatically from the aircraft registration.</div>
     <div class="graph-wrap"><svg id="cgGraph" class="cg-graph" viewBox="0 0 720 500" role="img" aria-label="Aircraft centre of gravity envelope with calculated point">
@@ -247,7 +247,8 @@ const AIRCRAFT = {
 "HOT":{registration:"VT-HOT (R)",empty:717.0,arm:41.73,taxi:3.0},
 "AAG":{registration:"VT-AAG (S)",empty:760.9,arm:43.87,taxi:3.8},
 "AAL":{registration:"VT-AAL (S)",empty:766.5,arm:43.06,taxi:3.8},
-"SEX":{registration:"VT-SEX (S)",empty:758.29,arm:42.89,taxi:3.8}
+"SEX":{registration:"VT-SEX (S)",empty:758.29,arm:42.89,taxi:3.8},
+"TLB":{registration:"VT-TLB",empty:1419.20,arm:14.95,taxi:0,multi:true,pilotArm:-37.4,copilotArm:-37.4,fuelArm:30.32}
 };
 const $=id=>document.getElementById(id);
 const fmt=(n,d=2)=>Number.isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
@@ -294,32 +295,70 @@ function renderEnvelope(model,weightLb,cgIn){
  $('graphStatus').style.color=markerColor;
  $('graphStatus').textContent=`Point is ${markerState}${inside?(utility?' and within the utility-category region':' (outside the utility-category region)'):''} (${fmt(weightLb,0)} lb · ${fmt(cgIn,2)} in).`;
 }
+function fuelLimit(a){return a.multi?400:200}
+function validateFuel(a){
+ const value=Number($("fuel").value), limit=fuelLimit(a), invalid=$("fuel").value!==""&&(!Number.isFinite(value)||value>limit||value<0);
+ const error=$("fuelError");
+ if(invalid){error.textContent=`Maximum fuel load ${limit}`;error.classList.add("show");$("fuel").classList.add("input-invalid");}
+ else{error.textContent="";error.classList.remove("show");$("fuel").classList.remove("input-invalid");}
+ $("fuel").max=String(limit);
+ return !invalid;
+}
 function calculate(){
- const a=AIRCRAFT[aircraft.value], fuelL=num("fuel"), pilot=num("pilot"), copilot=num("copilot");
- const fuelKg=fuelL*.72, taxi=a.taxi;
- const ramp=a.empty+fuelKg+pilot+copilot;
- const rampMoment=a.empty*a.arm+fuelKg*48+pilot*37+copilot*37;
- const tow=ramp-taxi, moment=rampMoment-taxi*48, cg=tow>0?moment/tow:NaN;
- const model=(a.registration.match(/\(([SR])\)/)||[])[1]||"S";
- renderEnvelope(model,tow*2.2,cg);
-
- $("tow").textContent=fmt(tow); $("cg").textContent=fmt(cg,2); $("towLbs").textContent=fmt(tow*2.2,1); $("ramp").textContent=fmt(ramp);
- const rows=[
- ["Basic empty weight",a.empty,a.arm,a.empty*a.arm],
- ["Usable fuel",fuelKg,48,fuelKg*48],
- ["Pilot",pilot,37,pilot*37],
- ["Co-pilot",copilot,37,copilot*37],
- ["Ramp total",ramp,"—",rampMoment],
- ["Taxi fuel deduction",-taxi,48,-taxi*48],
- ["Take-off total",tow,"—",moment]
- ];
- $("breakdown").innerHTML=rows.map((r,i)=>`<tr class="${i===4||i===6?'tot':''}"><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${typeof r[2]==="number"?fmt(r[2]):r[2]}</td><td>${fmt(r[3])}</td></tr>`).join("")+
- `<tr class="tot"><td>CG</td><td colspan="2">Moment ÷ T/O weight</td><td>${fmt(cg)}</td></tr>`;
- return {aircraft:aircraft.value,registration:a.registration,fuelLitres:fuelL,pilotKg:pilot,copilotKg:copilot,calculatedAt:new Date().toISOString(),rampWeightKg:ramp,takeoffWeightKg:tow,takeoffWeightLb:tow*2.2,cgInches:cg};
+ const a=AIRCRAFT[aircraft.value], validFuel=validateFuel(a), fuelL=num("fuel"), pilot=num("pilot"), copilot=num("copilot");
+ const isMulti=!!a.multi;
+ $("envelopeSection").hidden=isMulti;
+ $("rampMetric").hidden=isMulti;
+ $("calculationHint").textContent=isMulti
+  ? "Fuel density: 0.72 kg/L · Empty-weight arm: 14.95 in · Pilot and co-pilot arms: −37.4 in · Fuel arm: 30.32 in · No taxi-fuel deduction."
+  : "Fuel density: 0.72 kg/L · Fuel arm: 48 in · Pilot stations: 37 in. Taxi-fuel values are taken from your workbook.";
+ if(!validFuel){
+  $("tow").textContent="—";$("cg").textContent="—";$("towLbs").textContent="—";$("ramp").textContent="—";
+  $("breakdown").innerHTML="";
+  if(!isMulti){$("graphStatus").textContent="Correct the fuel load to plot the result.";$("graphMarker").innerHTML="";}
+  return null;
+ }
+ const fuelKg=fuelL*.72;
+ let ramp,tow,rampMoment,moment,cg,rows;
+ if(isMulti){
+  const emptyMoment=a.empty*a.arm, pilotMoment=pilot*a.pilotArm, copilotMoment=copilot*a.copilotArm, fuelMoment=fuelKg*a.fuelArm;
+  tow=a.empty+pilot+copilot+fuelKg;
+  moment=emptyMoment+pilotMoment+copilotMoment+fuelMoment;
+  cg=tow>0?moment/tow:NaN;
+  ramp=tow;
+  rows=[
+   ["Basic Empty Weight",a.empty,a.arm,emptyMoment],
+   ["Pilot",pilot,a.pilotArm,pilotMoment],
+   ["Co-pilot",copilot,a.copilotArm,copilotMoment],
+   ["Usable Fuel",fuelKg,a.fuelArm,fuelMoment],
+   ["Take-off Total",tow,"—",moment]
+  ];
+ }else{
+  const taxi=a.taxi;
+  ramp=a.empty+fuelKg+pilot+copilot;
+  rampMoment=a.empty*a.arm+fuelKg*48+pilot*37+copilot*37;
+  tow=ramp-taxi;moment=rampMoment-taxi*48;cg=tow>0?moment/tow:NaN;
+  const model=(a.registration.match(/\(([SR])\)/)||[])[1]||"S";
+  renderEnvelope(model,tow*2.2,cg);
+  rows=[
+   ["Basic empty weight",a.empty,a.arm,a.empty*a.arm],
+   ["Usable fuel",fuelKg,48,fuelKg*48],
+   ["Pilot",pilot,37,pilot*37],
+   ["Co-pilot",copilot,37,copilot*37],
+   ["Ramp total",ramp,"—",rampMoment],
+   ["Taxi fuel deduction",-taxi,48,-taxi*48],
+   ["Take-off total",tow,"—",moment]
+  ];
+ }
+ $("tow").textContent=fmt(tow);$("cg").textContent=fmt(cg,2);$("towLbs").textContent=fmt(tow*2.2,1);$("ramp").textContent=fmt(ramp);
+ $("breakdown").innerHTML=rows.map((r,i)=>`<tr class="${(isMulti?i===4:(i===4||i===6))?'tot':''}"><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${typeof r[2]==="number"?fmt(r[2]):r[2]}</td><td>${fmt(r[3])}</td></tr>`).join("")+
+  `<tr class="tot"><td>CG</td><td colspan="2">Moment ÷ T/O weight</td><td>${fmt(cg)}</td></tr>`;
+ return {aircraft:aircraft.value,registration:a.registration,fuelLitres:fuelL,pilotKg:pilot,copilotKg:copilot,calculatedAt:new Date().toISOString(),rampWeightKg:isMulti?undefined:ramp,takeoffWeightKg:tow,takeoffWeightLb:tow*2.2,cgInches:cg};
 }
 ["aircraft","fuel","pilot","copilot"].forEach(id=>$(id).addEventListener("input",calculate));
+$("aircraft").addEventListener("change",calculate);
 function getRecords(){try{return JSON.parse(localStorage.getItem("loadTrimRecords")||"[]")}catch{return []}}
-$("saveBtn").addEventListener("click",()=>{const r=calculate();const records=getRecords();records.unshift(r);localStorage.setItem("loadTrimRecords",JSON.stringify(records));$("status").textContent="Calculation saved on this device.";});
+$("saveBtn").addEventListener("click",()=>{const r=calculate();if(!r){$("status").textContent="Correct the fuel load before saving.";return;}const records=getRecords();records.unshift(r);localStorage.setItem("loadTrimRecords",JSON.stringify(records));$("status").textContent="Calculation saved on this device.";});
 $("resetBtn").addEventListener("click",()=>{$("fuel").value="";$("pilot").value="";$("copilot").value="";$("status").textContent="Inputs reset.";calculate()});
 $("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(getRecords(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="load-trim-records.json";a.click();URL.revokeObjectURL(a.href);$("recordsStatus").textContent="Export file prepared."});
 $("importBtn").addEventListener("click",()=>$("importFile").click());

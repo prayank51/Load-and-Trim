@@ -1,4 +1,4 @@
 {
-  "version": "1.1.6",
-  "releaseNotes": "Adds dimensional 3D-style weather icons that adapt to day/night, cloud cover, precipitation intensity, fog, snow and thunderstorms. Adds local sunrise and sunset times. Retains 60-second Live status, manual refresh, saved calculations and offline support."
+  "version": "1.1.7",
+  "releaseNotes": "Adds VT-TLB multi-engine aircraft with aircraft-specific weight-and-balance breakdown, 400 L fuel limit, no ramp/taxi section and no CG graph. Single-engine aircraft retain existing breakdown and 200 L fuel limit."
 }
